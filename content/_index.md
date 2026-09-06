@@ -77,3 +77,9 @@ FlatPPL is open source and development happens in the
 - [flatppl-examples](https://github.com/flatppl/flatppl-examples): example FlatPPL models.
 - [flatppl-ai-skills](https://github.com/flatppl/flatppl-ai-skills): skills that teach AI coding agents to understand and generate FlatPPL.
 - ... more to come soon ...
+
+## Funding
+
+This work was supported by Germany's Federal Ministry of Research, Technology
+and Space (BMFTR) within the ErUM-Data programme under grant FKZ 05D25PC1
+(DEMOS consortium).
