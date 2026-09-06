@@ -26,11 +26,25 @@
   }
 }
 
-/* The theme caps the content column at 72rem and centres it in whatever
-   space is left, so the body drifts right of the navbar whenever the page
-   container is wider than the column: on wide screens, and between the
-   column width and the breakpoint where the table of contents appears.
-   Letting the column grow to the page width removes both cases. */
+/* Layout widths. The text column is capped at 50rem, about 95 characters
+   per line, and the navbar, footer, and page containers are exactly as wide
+   as the column, plus the 16rem table of contents once it is shown. All
+   three therefore share one left edge, and the margins grow with the
+   window instead of the line length. The table of contents appears from
+   1024px rather than the theme's 1280px. */
 :root {
-  --hextra-max-content-width: 90rem;
+  --hextra-max-content-width: 50rem;
+  --hextra-max-page-width: 50rem;
+  --hextra-max-navbar-width: 50rem;
+  --hextra-max-footer-width: 50rem;
+}
+@media (min-width: 1024px) {
+  :root {
+    --hextra-max-page-width: 66rem;
+    --hextra-max-navbar-width: 66rem;
+    --hextra-max-footer-width: 66rem;
+  }
+  nav.hextra-toc {
+    display: block;
+  }
 }
