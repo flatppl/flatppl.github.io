@@ -1,0 +1,17 @@
+/* Keep the footer, and with it the legal notice link, visible at the bottom
+   of the viewport while the page scrolls. The footer stays in the normal
+   document flow, so it never covers content: at the end of the page it sits
+   in its natural place. The translucent border reads on both themes. */
+.hextra-footer {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  border-top: 1px solid rgb(128 128 128 / 0.3);
+}
+
+/* Footer links start where the navbar logo starts: the theme pads both bars
+   by the same 1.5rem, so no extra offset is needed. */
+.footer-links {
+  justify-content: flex-start;
+  gap: 1.5rem;
+}
