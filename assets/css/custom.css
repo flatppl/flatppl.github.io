@@ -15,3 +15,22 @@
   justify-content: flex-start;
   gap: 1.5rem;
 }
+
+/* The theme pads the page body by 3rem above its medium breakpoint but the
+   navbar and footer by 1.5rem at all widths. Use 1.5rem for the body too, so
+   the logo, the content, and the footer links share one left edge. */
+@media (min-width: 768px) {
+  main.hextra-max-content-width {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+/* The theme caps the content column at 72rem and centres it in whatever
+   space is left, so the body drifts right of the navbar whenever the page
+   container is wider than the column: on wide screens, and between the
+   column width and the breakpoint where the table of contents appears.
+   Letting the column grow to the page width removes both cases. */
+:root {
+  --hextra-max-content-width: 90rem;
+}

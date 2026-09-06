@@ -35,6 +35,7 @@ menu:
 params:
   description: "FlatPPL, the Flat Portable Probabilistic Language: a minimal, inference-agnostic language for specifying probabilistic models."
   navbar:
+    width: wide
     displayTitle: true
     displayLogo: true
     logo:
@@ -51,5 +52,6 @@ params:
   search:
     enable: false
   footer:
+    width: wide
     displayCopyright: false
     displayPoweredBy: false
