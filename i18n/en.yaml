@@ -1,0 +1,4 @@
+# Overrides for the theme's UI strings; all other keys fall through to the
+# theme's own i18n/en.yaml.
+light: "Whiteboard"
+dark: "Blackboard"
