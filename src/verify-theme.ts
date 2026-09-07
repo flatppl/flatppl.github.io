@@ -4,10 +4,10 @@ import { join, relative, resolve, sep } from "node:path";
 
 const PIN = {
   name: "flatppl-theme",
-  version: "0.1.2",
-  release: "v0.1.2",
-  commit: "671f2423c99c5da8a53b0450156ecad94fae2e84",
-  manifestSha256: "71281230f642de7243a051642079aea7ac698446c6b89321808715acaa7dc06b",
+  version: "0.1.3",
+  release: "v0.1.3",
+  commit: "d0470679cf145f83a792a823c5d4c83d0d31743c",
+  manifestSha256: "7bac1959dbe0cbc61ad45184e3dfff52423bc3ae5989871dbaf1f40390c14edc",
 } as const;
 
 interface Manifest {
