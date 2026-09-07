@@ -1,12 +1,6 @@
 ---
 title: FlatPPL
-type: docs
-breadcrumbs: false
-sidebar:
-  hide: true
-prev: false
-next: false
-toc: true
+description: "FlatPPL, the Flat Portable Probabilistic Language: a minimal, inference-agnostic language for specifying probabilistic models."
 ---
 
 FlatPPL (the Flat Portable Probabilistic Language) describes deterministic and

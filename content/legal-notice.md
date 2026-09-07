@@ -1,13 +1,6 @@
 ---
 title: Legal Notice
-type: docs
-breadcrumbs: false
-sidebar:
-  hide: true
-  exclude: true
-prev: false
-next: false
-toc: false
+description: Provider, copyright, data protection, and hosting information for the FlatPPL website.
 ---
 
 The following provides mandatory data concerning the provider of this
@@ -111,10 +104,9 @@ licensed under the
 the [MIT License](https://opensource.org/license/mit/). The source of the
 website is available in the
 [flatppl.github.io](https://github.com/flatppl/flatppl.github.io) repository.
-The site is built with the [Hextra](https://github.com/imfing/hextra) theme,
-which is licensed under the MIT License. The FlatPPL specification is
-licensed under CC BY 4.0 and the FlatPPL software under the open-source
-licenses stated in the respective repositories of the
+The site's shared visual theme and build software are licensed under the MIT
+License. The FlatPPL specification is licensed under CC BY 4.0 and the FlatPPL
+software under the open-source licenses stated in the respective repositories of the
 [flatppl](https://github.com/flatppl) GitHub organisation.
 
 ## Hosting

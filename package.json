@@ -1,0 +1,27 @@
+{
+  "name": "flatppl-site",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "bun run src/build.ts",
+    "test": "bun run build && bun test src/*.test.ts",
+    "typecheck": "tsc --noEmit",
+    "verify-theme": "bun run src/verify-theme.ts vendor/flatppl-theme",
+    "htmlcheck": "bun run src/check.ts",
+    "linkcheck": "bun run src/linkcheck.ts",
+    "a11y": "bun run src/a11y.ts",
+    "check": "bun run typecheck && bun run verify-theme && bun run build && bun run htmlcheck && bun run linkcheck && bun run a11y",
+    "dev": "bun run src/dev.ts"
+  },
+  "dependencies": {
+    "markdown-it": "15.0.1"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@types/bun": "1.3.4",
+    "@types/markdown-it": "14.1.2",
+    "playwright": "1.62.1",
+    "typescript": "5.9.3"
+  }
+}
