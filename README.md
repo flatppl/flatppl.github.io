@@ -20,7 +20,7 @@ The development server prints its local URL. Production output is written to
 
 ## Shared theme
 
-The exact `flatppl-theme` v0.1.0 release bundle is committed under
+The exact `flatppl-theme` v0.1.1 release bundle is committed under
 `vendor/flatppl-theme/`. `bun run verify-theme` checks its pinned release,
 source commit, manifest digest, file sizes, and SHA-256 hashes.
 

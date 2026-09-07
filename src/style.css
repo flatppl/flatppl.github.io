@@ -2,10 +2,6 @@
   box-sizing: border-box;
 }
 
-.fp-product-nav [hidden] {
-  display: none !important;
-}
-
 body {
   min-height: 100vh;
   margin: 0;
@@ -25,7 +21,6 @@ body {
   flex: 1;
 }
 
-.fp-product-bar,
 .fp-shell-footer {
   width: min(100%, calc(var(--fp-col-width) + 2 * var(--fp-gutter)));
   margin-inline: auto;
