@@ -38,7 +38,7 @@ jobs:
         run: bunx playwright install --with-deps chromium
 
       - name: Check site
-        run: bun test && bun run check
+        run: bun run test && bun run check
 
       # Resolves the URL the site is actually served from (the custom domain
       # once configured, the github.io address before that). Skipped on pull
