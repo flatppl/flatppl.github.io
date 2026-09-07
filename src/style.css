@@ -22,11 +22,6 @@ body {
 }
 
 .fp-shell-footer {
-  width: min(100%, calc(var(--fp-col-width) + 2 * var(--fp-gutter)));
-  margin-inline: auto;
-}
-
-.fp-shell-footer {
   position: sticky;
   bottom: 0;
 }
@@ -71,7 +66,5 @@ body {
 
   .fp-shell-footer {
     position: static;
-    flex-wrap: wrap;
-    padding-block: 0.75rem;
   }
 }
