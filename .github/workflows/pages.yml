@@ -1,6 +1,6 @@
 name: Build and deploy site
 
-# Builds the landing page with Hugo on every push and pull request, and
+# Builds the landing page with Bun on every push and pull request, and
 # deploys it to GitHub Pages on pushes to main. The repository's Pages
 # settings must select "GitHub Actions" as the deploy source (one-time,
 # manual). The custom domain is configured in the same settings page, not
@@ -25,29 +25,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # The Hextra theme is a git submodule under themes/.
       - uses: actions/checkout@v7
-        with:
-          submodules: true
 
-      # Fetches the pinned release the Hugo project publishes itself and
-      # verifies it against the SHA-256 from that release's checksum file
-      # (hugo_<version>_checksums.txt) before installing. Bumping Hugo means
-      # updating both values.
-      - name: Install Hugo (extended)
-        env:
-          HUGO_VERSION: '0.165.0'
-          HUGO_SHA256: 'f43494894cdf4a8630a201d5c828051c77f523cc66bb3938b30806835470ac20'
-        run: |
-          set -euo pipefail
-          archive="hugo_extended_${HUGO_VERSION}_linux-amd64.tar.gz"
-          curl -sSfL -o "${RUNNER_TEMP}/${archive}" \
-            "https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/${archive}"
-          echo "${HUGO_SHA256}  ${RUNNER_TEMP}/${archive}" | sha256sum --check --strict
-          mkdir -p "${RUNNER_TEMP}/hugo"
-          tar -xzf "${RUNNER_TEMP}/${archive}" -C "${RUNNER_TEMP}/hugo" hugo
-          echo "${RUNNER_TEMP}/hugo" >> "$GITHUB_PATH"
-          "${RUNNER_TEMP}/hugo/hugo" version
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version-file: .bun-version
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Install Chromium for accessibility checks
+        run: bunx playwright install --with-deps chromium
+
+      - name: Check site
+        run: bun run test && bun run check
 
       # Resolves the URL the site is actually served from (the custom domain
       # once configured, the github.io address before that). Skipped on pull
@@ -58,12 +49,12 @@ jobs:
         uses: actions/configure-pages@v6
 
       - name: Build site
-        run: hugo --minify --baseURL "${{ steps.pages.outputs.base_url || 'https://flatppl.org' }}/"
+        run: bun run build
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
         with:
-          path: public
+          path: build
 
   deploy:
     if: github.event_name != 'pull_request'

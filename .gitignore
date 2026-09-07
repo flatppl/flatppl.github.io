@@ -1,7 +1,9 @@
-# Hugo build output
-public/
-resources/_gen/
-.hugo_build.lock
+# Generated site
+build/
+build.tmp/
+
+# Dependencies
+node_modules/
 
 # Editor files
 *~

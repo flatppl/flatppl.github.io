@@ -1,13 +1,6 @@
 ---
 title: AI Declaration
-type: docs
-breadcrumbs: false
-sidebar:
-  hide: true
-  exclude: true
-prev: false
-next: false
-toc: false
+description: How generative AI assisted the creation of the FlatPPL website.
 ---
 
 Generative AI was used to assist in creating this website: in

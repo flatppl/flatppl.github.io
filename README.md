@@ -1,17 +1,28 @@
 # flatppl.github.io
 
-The [FlatPPL](https://flatppl.org/) landing page: a single-page site built with
-[Hugo](https://gohugo.io/) and the [Hextra](https://github.com/imfing/hextra)
-theme, served by GitHub Pages.
+The [FlatPPL](https://flatppl.org/) landing page, built from Markdown with Bun
+and TypeScript and served by GitHub Pages.
 
 ## Local preview
 
-Using Hugo:
+Using the Bun version in `.bun-version`:
 
 ```sh
-hugo server        # live-reloading preview at http://localhost:1313/
-hugo --minify      # production build into public/
+bun install --frozen-lockfile
+bun test
+bun run build
+bun run check
+bun run dev
 ```
+
+The development server prints its local URL. Production output is written to
+`build/` only after every source and vendored-theme check succeeds.
+
+## Shared theme
+
+The exact `flatppl-theme` v0.1.0 release bundle is committed under
+`vendor/flatppl-theme/`. `bun run verify-theme` checks its pinned release,
+source commit, manifest digest, file sizes, and SHA-256 hashes.
 
 ## Funding
 
