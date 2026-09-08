@@ -31,7 +31,8 @@ body {
   z-index: 110;
 }
 
-.has-toc .fp-shell-header { position: relative; z-index: 300; }
+html { scroll-padding-top: calc(var(--fp-header-h) + 1rem); }
+.fp-shell-header { position: sticky; top: 0; z-index: 300; }
 .has-toc:not(.toc-collapsed) #main-content {
   margin-left: max(var(--fp-nav-width), calc((100vw - var(--fp-col-width)) / 2));
   margin-right: 0;
@@ -110,7 +111,6 @@ body {
   border: 0;
   background: rgb(0 0 0 / 30%);
 }
-.has-toc h2, .has-toc h3 { scroll-margin-top: 1em; }
 
 .fp-prose h1,
 .fp-prose h2,
