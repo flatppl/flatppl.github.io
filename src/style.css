@@ -15,9 +15,13 @@ body {
 }
 
 #main-content {
-  width: min(calc(100% - 2 * var(--fp-gutter)), var(--fp-col-width));
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  box-sizing: content-box;
+  max-width: var(--fp-col-width);
   margin: 0 auto;
-  padding: 2.5rem 0 4rem;
+  padding: 2em 2em 4em 3em;
+  overflow-wrap: break-word;
   flex: 1;
 }
 
@@ -29,8 +33,8 @@ body {
 
 .has-toc .fp-shell-header { position: relative; z-index: 300; }
 .has-toc:not(.toc-collapsed) #main-content {
-  width: min(calc(100% - var(--fp-nav-width) - 2 * var(--fp-gutter)), var(--fp-col-width));
-  margin-left: max(calc(var(--fp-nav-width) + var(--fp-gutter)), calc((100% - var(--fp-col-width)) / 2));
+  margin-left: max(var(--fp-nav-width), calc((100vw - var(--fp-col-width)) / 2));
+  margin-right: 0;
 }
 #site-sidebar {
   position: fixed;
@@ -133,20 +137,20 @@ body {
   margin-block: var(--fp-rhythm);
 }
 
+.fp-prose :where(p, ul, ol) { margin-block: 1em; }
+.fp-prose :where(ul, ol) > li { margin-bottom: 0.25em; }
+
 .fp-prose :where(ul, ol) {
-  padding-left: 1.5em;
+  padding-left: 2.5em;
 }
 
 @media (max-width: 60em) {
-  .has-toc:not(.toc-collapsed) #main-content {
-    width: min(calc(100% - 2 * var(--fp-gutter)), var(--fp-col-width));
-    margin-inline: auto;
-  }
-  .has-toc #main-content { padding-top: 3.5em; }
   #site-sidebar { max-width: calc(100% - 3.5rem); bottom: 0; }
 
-  #main-content {
-    padding-top: 1.75rem;
+  #main-content,
+  .has-toc:not(.toc-collapsed) #main-content {
+    margin-inline: 0;
+    padding: 3.5em 1.2em 2em;
   }
 
   .fp-shell-footer {
