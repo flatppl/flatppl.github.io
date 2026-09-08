@@ -3,6 +3,8 @@ title: FlatPPL
 description: "FlatPPL, the Flat Portable Probabilistic Language: a minimal, inference-agnostic language for specifying probabilistic models."
 ---
 
+[Try an example](https://live.flatppl.org/#model=examples%2Flinear-regression.flatppl) · [Read the spec](https://spec.flatppl.org/)
+
 FlatPPL (the Flat Portable Probabilistic Language) describes deterministic and
 stochastic scientific models in a human- and AI-friendly way. The "PPL" in the
 name may also be read as "Probabilistic Programming Language", though we
