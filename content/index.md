@@ -5,6 +5,11 @@ description: "FlatPPL, the Flat Portable Probabilistic Language: a minimal, infe
 
 [Try an example](https://live.flatppl.org/#model=examples%2Flinear-regression.flatppl) · [Read the spec](https://spec.flatppl.org/)
 
+Start with the [Language overview](https://spec.flatppl.org/#sec:overview)
+or [A first example](https://spec.flatppl.org/#sec:first-example).
+[Install the VS Code extension](https://github.com/flatppl/flatppl-js/tree/main/packages/vscode-extension#installation)
+to work with FlatPPL in your editor.
+
 FlatPPL (the Flat Portable Probabilistic Language) describes deterministic and
 stochastic scientific models in a human- and AI-friendly way. The "PPL" in the
 name may also be read as "Probabilistic Programming Language", though we
