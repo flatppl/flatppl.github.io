@@ -10,7 +10,7 @@ try {
   for (const colorScheme of ["light", "dark"] as const) {
     const context = await browser.newContext({ colorScheme });
     const page = await context.newPage();
-    for (const path of ["/", "/legal-notice/", "/ai-declaration/"]) {
+    for (const path of ["/", "/legal-notice/"]) {
       await page.goto(`http://127.0.0.1:${server.port}${path}`, { waitUntil: "load" });
       const results = await new AxeBuilder({ page })
         .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
@@ -41,4 +41,4 @@ try {
 
 for (const failure of failures) console.error(failure);
 if (failures.length > 0) process.exit(1);
-console.log("Accessibility check passed for 3 pages in light and dark themes, plus the 375px navigation");
+console.log("Accessibility check passed for 2 pages in light and dark themes, plus the 375px navigation");

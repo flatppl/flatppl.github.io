@@ -3,7 +3,7 @@ import { join } from "node:path";
 export async function checkOutput(root = "build"): Promise<string[]> {
   const errors: string[] = [];
   const htmlFiles = [...new Bun.Glob("**/*.html").scanSync({ cwd: root })].sort();
-  if (htmlFiles.length !== 3) errors.push(`expected 3 HTML pages, found ${htmlFiles.length}`);
+  if (htmlFiles.length !== 2) errors.push(`expected 2 HTML pages, found ${htmlFiles.length}`);
 
   for (const file of htmlFiles) {
     const html = await Bun.file(join(root, file)).text();

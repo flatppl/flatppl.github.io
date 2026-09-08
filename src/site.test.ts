@@ -7,21 +7,18 @@ async function built(path: string): Promise<string> {
 }
 
 describe("published site", () => {
-  test("build preserves the three published page URLs", async () => {
+  test("build preserves the published page URLs", async () => {
     const home = await built("index.html");
     const legal = await built("legal-notice/index.html");
-    const ai = await built("ai-declaration/index.html");
 
     expect(home).toContain("Flat Portable Probabilistic Language");
     expect(legal).toContain("Legal Notice");
-    expect(ai).toContain("AI Declaration");
   });
 
   test("pages use the shared FlatPPL shell", async () => {
     const pages = await Promise.all([
       built("index.html"),
       built("legal-notice/index.html"),
-      built("ai-declaration/index.html"),
     ]);
 
     for (const html of pages) {
