@@ -9,6 +9,15 @@ function escapeHtml(value: string): string {
 export function renderShell(page: Page, header: string, footer: string): string {
   const title = page.url === "/" ? "FlatPPL" : `${page.title} · FlatPPL`;
   const productHeader = header.replace('data-fp-nav="site"', 'data-fp-nav="site" aria-current="page"');
+  // Headings come from our Markdown renderer, which escapes raw HTML.
+  const entries = page.url === "/" ? [...page.html.matchAll(/<h([23]) id="([^"]+)">([\s\S]*?)<\/h\1>/g)] : [];
+  const toc = entries.length ? `<aside id="site-sidebar" aria-label="Contents">
+<div class="toc-title"><span>Contents</span><button id="toc-close" type="button" aria-label="Collapse contents">‹</button></div>
+<nav aria-label="On this page"><ul>${entries.map(([, level, id, label]) =>
+    `<li class="toc-level-${level}"><a href="#${id}">${label!.replace(/<[^>]*>/g, "")}</a></li>`).join("")}</ul></nav>
+</aside>
+<button id="toc-toggle" type="button" aria-controls="site-sidebar" aria-expanded="true" aria-label="Toggle contents" hidden>☰</button>
+<button id="toc-backdrop" type="button" aria-label="Close contents" tabindex="-1" hidden></button>` : "";
   return `<!doctype html>
 <html lang="en" data-fp-active="site">
 <head>
@@ -32,9 +41,11 @@ export function renderShell(page: Page, header: string, footer: string): string 
 <link rel="stylesheet" href="/syntax.css">
 <link rel="stylesheet" href="/style.css">
 <script src="/theme/shell.js"></script>
+${toc ? '<script src="/toc.js" defer></script>' : ""}
 </head>
-<body>
+<body${toc ? ' class="has-toc"' : ""}>
 ${productHeader}
+${toc}
 <main id="main-content" class="fp-prose" tabindex="-1">
 <article>
 <h1>${escapeHtml(page.title)}</h1>
