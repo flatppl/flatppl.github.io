@@ -35,7 +35,9 @@ jobs:
         run: bun install --frozen-lockfile
 
       - name: Install Chromium for accessibility checks
-        run: bunx playwright install --with-deps chromium
+        # The hosted Ubuntu image supplies the system libraries. Download only
+        # Playwright's pinned browser, avoiding unrelated apt repository faults.
+        run: bunx playwright install chromium
 
       - name: Check site
         run: bun run test && bun run check
