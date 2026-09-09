@@ -2,23 +2,25 @@ import { createHash } from "node:crypto";
 import { readFile, readdir, stat } from "node:fs/promises";
 import { join, relative, resolve, sep } from "node:path";
 
-const PIN = {
-  name: "flatppl-theme",
-  version: "0.1.8",
-  release: "v0.1.8",
-  commit: "0febddef1c01760186432ab03ceeb132f109a6f7",
-  manifestSha256: "37ceb2ee6efa6b395cdcdc42c0a96782096535d7aaa8c179bb10ecabe8c44fbd",
-} as const;
+const NAME = "flatppl-theme";
 
-interface Manifest {
+export interface ThemeManifest {
   name: string;
   version: string;
-  source: { commit: string; release?: string };
+  source: { repository?: string; commit: string; release?: string };
   files: Array<{ path: string; sha256: string; size: number }>;
 }
 
 async function digest(path: string): Promise<string> {
   return createHash("sha256").update(await readFile(path)).digest("hex");
+}
+
+async function isDirectory(path: string): Promise<boolean> {
+  try {
+    return (await stat(path)).isDirectory();
+  } catch {
+    return false;
+  }
 }
 
 async function filesUnder(root: string): Promise<string[]> {
@@ -34,17 +36,34 @@ async function filesUnder(root: string): Promise<string[]> {
   return files.sort();
 }
 
-export async function verifyTheme(bundle: string): Promise<string[]> {
-  const root = resolve(bundle);
-  const manifestPath = join(root, "manifest.json");
-  const manifest = (await Bun.file(manifestPath).json()) as Manifest;
-  const errors: string[] = [];
+/** The bundle's own manifest, or null for a sibling checkout copy, which ships none. */
+export async function readManifest(bundle: string): Promise<ThemeManifest | null> {
+  const file = Bun.file(join(resolve(bundle), "manifest.json"));
+  if (!(await file.exists())) return null;
+  return (await file.json()) as ThemeManifest;
+}
 
-  if (await digest(manifestPath) !== PIN.manifestSha256) errors.push("manifest.json: SHA-256 mismatch");
-  if (manifest.name !== PIN.name) errors.push(`manifest.json: expected ${PIN.name}`);
-  if (manifest.version !== PIN.version) errors.push(`manifest.json: expected version ${PIN.version}`);
-  if (manifest.source.release !== PIN.release) errors.push(`manifest.json: expected release ${PIN.release}`);
-  if (manifest.source.commit !== PIN.commit) errors.push(`manifest.json: expected commit ${PIN.commit}`);
+/**
+ * Self-check: a release bundle must match the manifest it ships with. Nothing is
+ * pinned here — the release tag that `fetch-theme.ts` downloads is the only pin,
+ * so a new theme release needs no digest edits in this repository. Pass `release`
+ * to also tie the bundle to a tag.
+ *
+ * A drop directory without a manifest is a sibling-checkout copy: unverifiable by
+ * construction, so it yields no errors and callers report it as unverified.
+ */
+export async function verifyTheme(bundle: string, release?: string): Promise<string[]> {
+  const root = resolve(bundle);
+  if (!(await isDirectory(root))) throw new Error(`no theme at ${bundle} — run: bun run fetch-theme`);
+
+  const manifest = await readManifest(root);
+  if (!manifest) return [];
+
+  const errors: string[] = [];
+  if (manifest.name !== NAME) errors.push(`manifest.json: expected name ${NAME}, found ${manifest.name}`);
+  if (release !== undefined && manifest.source.release !== release) {
+    errors.push(`manifest.json: expected release ${release}, found ${manifest.source.release ?? "none"}`);
+  }
 
   const declared = new Map(manifest.files.map((file) => [file.path, file]));
   const actual = (await filesUnder(root)).filter((path) => path !== "manifest.json");
@@ -62,9 +81,15 @@ export async function verifyTheme(bundle: string): Promise<string[]> {
 }
 
 if (import.meta.main) {
-  const bundle = Bun.argv[2];
-  if (!bundle) throw new Error("usage: bun run src/verify-theme.ts <bundle>");
+  const bundle = Bun.argv[2] ?? "vendor/flatppl-theme";
   const errors = await verifyTheme(bundle);
   for (const error of errors) console.error(error);
   if (errors.length > 0) process.exit(1);
+
+  const manifest = await readManifest(bundle);
+  if (manifest) {
+    console.log(`theme: verified flatppl-theme ${manifest.version} (${manifest.source.release ?? manifest.source.commit})`);
+  } else {
+    console.warn(`theme: UNVERIFIED sibling checkout copy at ${bundle} (no manifest.json)`);
+  }
 }
