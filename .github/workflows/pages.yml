@@ -34,6 +34,12 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      # The theme bundle is not committed. Fetching it in its own step keeps the
+      # download out of the check and build logs, and makes a failure here read
+      # as what it is: the pinned release was unreachable or did not verify.
+      - name: Fetch shared theme
+        run: bun run fetch-theme
+
       - name: Check site
         run: |
           bun run test

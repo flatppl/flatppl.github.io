@@ -4,15 +4,16 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "bun run src/build.ts",
+    "fetch-theme": "bun run src/fetch-theme.ts",
+    "build": "bun run fetch-theme && bun run src/build.ts",
     "test": "bun run build && bun test src/*.test.ts",
     "typecheck": "tsc --noEmit",
-    "verify-theme": "bun run src/verify-theme.ts vendor/flatppl-theme",
+    "verify-theme": "bun run fetch-theme && bun run src/verify-theme.ts vendor/flatppl-theme",
     "htmlcheck": "bun run src/check.ts",
     "linkcheck": "bun run src/linkcheck.ts",
     "a11y": "bun run src/a11y.ts",
     "check": "bun run typecheck && bun run verify-theme && bun run build && bun run htmlcheck && bun run linkcheck && bun run a11y",
-    "dev": "bun run src/dev.ts"
+    "dev": "bun run fetch-theme && bun run src/dev.ts"
   },
   "dependencies": {
     "markdown-it": "15.0.1"
