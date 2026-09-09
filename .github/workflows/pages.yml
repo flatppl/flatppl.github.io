@@ -34,13 +34,13 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Install Chromium for accessibility checks
-        # The hosted Ubuntu image supplies the system libraries. Download only
-        # Playwright's pinned browser, avoiding unrelated apt repository faults.
-        run: bunx playwright install chromium
-
       - name: Check site
-        run: bun run test && bun run check
+        run: |
+          bun run test
+          bun run typecheck
+          bun run verify-theme
+          bun run htmlcheck
+          bun run linkcheck
 
       # Resolves the URL the site is actually served from (the custom domain
       # once configured, the github.io address before that). Skipped on pull
