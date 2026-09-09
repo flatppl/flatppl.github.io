@@ -2,6 +2,9 @@
 build/
 build.tmp/
 
+# Shared theme, fetched at build time by src/fetch-theme.ts
+vendor/
+
 # Dependencies
 node_modules/
 
