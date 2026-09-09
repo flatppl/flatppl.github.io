@@ -11,6 +11,12 @@ const ROOT = resolve(import.meta.dir, "..");
 const DROP = join(ROOT, "vendor", "flatppl-theme");
 const SIBLING = resolve(ROOT, "..", "flatppl-theme");
 const DOWNLOAD_ATTEMPTS = 3;
+const DOWNLOAD_TIMEOUT_MS = 30_000;
+
+/** What to do when the release cannot be had; carried in the error, not only in a log line. */
+const HINT =
+  "Restore network access and retry, point FLATPPL_THEME_DIR at a flatppl-theme checkout, " +
+  "or check out flatppl-theme next to this repository.";
 
 /** Source files a theme checkout provides, mirroring REQUIRED_FILES in the theme's scripts/bundle.ts. */
 export const THEME_FILES = [
@@ -118,10 +124,14 @@ async function copyCheckout(source: string, drop: string): Promise<void> {
   }
 
   await replaceDrop(drop, async (staging) => {
+    // assets/ goes across whole, the way the theme's own bundle step takes it, so an
+    // asset added upstream reaches the site before THEME_FILES here is updated.
+    await cp(join(source, "assets"), join(staging, "assets"), { recursive: true, dereference: false });
     for (const file of THEME_FILES) {
+      if (file.startsWith("assets/")) continue;
       const target = join(staging, file);
       await mkdir(dirname(target), { recursive: true });
-      await cp(join(source, file), target);
+      await cp(join(source, file), target, { dereference: false });
     }
   });
 }
@@ -130,7 +140,7 @@ async function download(url: string, target: string): Promise<void> {
   let failure = "";
   for (let attempt = 1; attempt <= DOWNLOAD_ATTEMPTS; attempt += 1) {
     try {
-      const response = await fetch(url);
+      const response = await fetch(url, { signal: AbortSignal.timeout(DOWNLOAD_TIMEOUT_MS) });
       if (!response.ok) throw new Error(`HTTP ${response.status} ${response.statusText}`);
       await Bun.write(target, response);
       return;
@@ -139,23 +149,45 @@ async function download(url: string, target: string): Promise<void> {
       if (attempt < DOWNLOAD_ATTEMPTS) await Bun.sleep(attempt * 500);
     }
   }
-  throw new Error(
-    `cannot download ${url}: ${failure}\n` +
-      "Check network access, or point FLATPPL_THEME_DIR at a local flatppl-theme checkout.",
-  );
+  throw new Error(`cannot download ${url}: ${failure}`);
 }
 
 async function extract(archive: string, into: string): Promise<void> {
-  const tar = Bun.spawn(["tar", "-xzf", archive, "-C", into], { stdout: "pipe", stderr: "pipe" });
+  let tar;
+  try {
+    tar = Bun.spawn(["tar", "-xzf", archive, "-C", into], { stdout: "pipe", stderr: "pipe" });
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    throw new Error(`cannot run tar, which unpacks the release tarball: ${reason}`);
+  }
   const [code, stderr] = await Promise.all([tar.exited, new Response(tar.stderr).text()]);
-  if (code !== 0) throw new Error(`cannot extract ${archive}: ${stderr.trim()}`);
+  if (code !== 0) throw new Error(`cannot unpack the release tarball: ${stderr.trim()}`);
+}
+
+/**
+ * What disqualifies a directory from being this site's copy of `ref`: the bundle
+ * self-check against its own manifest, plus the files this site reads by name.
+ * A release that stopped shipping one of those fails here rather than leaving a
+ * gap in the built site.
+ */
+async function releaseErrors(directory: string, ref: string): Promise<string[]> {
+  const errors = await verifyTheme(directory, ref);
+  const manifest = await readManifest(directory);
+  if (manifest === null) {
+    errors.unshift("manifest.json: missing");
+    return errors;
+  }
+  const declared = new Set(manifest.files.map((file) => file.path));
+  for (const file of THEME_FILES) {
+    if (!declared.has(file)) errors.push(`${file}: needed by this site, not in the release`);
+  }
+  return errors;
 }
 
 /** A drop directory already holding this release, verified — the build cache. */
-async function holdsRelease(drop: string, ref: string): Promise<boolean> {
+export async function holdsRelease(drop: string, ref: string): Promise<boolean> {
   if (!(await isDirectory(drop))) return false;
-  if ((await readManifest(drop)) === null) return false;
-  return (await verifyTheme(drop, ref)).length === 0;
+  return (await releaseErrors(drop, ref)).length === 0;
 }
 
 async function fetchRelease(ref: string, drop: string): Promise<void> {
@@ -166,15 +198,19 @@ async function fetchRelease(ref: string, drop: string): Promise<void> {
 
   // The release tarball holds the bundle files at its top level, manifest included.
   const url = releaseTarballUrl(ref);
-  await replaceDrop(drop, async (staging, scratch) => {
-    const archive = join(scratch, "bundle.tar.gz");
-    await download(url, archive);
-    await extract(archive, staging);
+  try {
+    await replaceDrop(drop, async (staging, scratch) => {
+      const archive = join(scratch, "bundle.tar.gz");
+      await download(url, archive);
+      await extract(archive, staging);
 
-    const errors = await verifyTheme(staging, ref);
-    if ((await readManifest(staging)) === null) errors.unshift("manifest.json: missing from the release tarball");
-    if (errors.length > 0) throw new Error(`flatppl-theme ${ref} failed its self-check:\n${errors.join("\n")}`);
-  });
+      const errors = await releaseErrors(staging, ref);
+      if (errors.length > 0) throw new Error(`flatppl-theme ${ref} failed its self-check:\n${errors.join("\n")}`);
+    });
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    throw new Error(`cannot take the flatppl-theme ${ref} release: ${reason}\n${HINT}`);
+  }
   console.log(`theme: fetched flatppl-theme ${ref} from GitHub (verified)`);
 }
 
