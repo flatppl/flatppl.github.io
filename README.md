@@ -29,8 +29,10 @@ file against the manifest that release ships with, keeping the download until
 the pin changes.
 
 A `flatppl-theme` checkout next to this repository is used in preference to the
-release, so theme edits show up in the next build. Such a copy carries no
-manifest and each build reports it as `UNVERIFIED`. Three variables steer this:
+release. Nothing watches that checkout: an edit there reaches the site on the
+next `bun run build`, and `bun run dev` only picks it up when restarted. The
+copy carries no manifest, so every build reports it as `UNVERIFIED`. Three
+variables steer this:
 
 - `FLATPPL_THEME_DIR` — copy from this checkout instead of the sibling one.
 - `FLATPPL_THEME_REF` — download this release tag instead of the pinned one.
