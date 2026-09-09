@@ -23,17 +23,26 @@ async function isDirectory(path: string): Promise<boolean> {
   }
 }
 
-async function filesUnder(root: string): Promise<string[]> {
+/**
+ * Every entry below `root`, split into regular files and everything else.
+ * `readdir` reports symlinks as symlinks, so a link is never followed here and
+ * never silently skipped either: a bundle that carries one is rejected, because
+ * a link the manifest cannot describe would still be copied into the site.
+ */
+async function entriesUnder(root: string): Promise<{ files: string[]; irregular: string[] }> {
   const files: string[] = [];
+  const irregular: string[] = [];
   async function visit(directory: string): Promise<void> {
     for (const entry of await readdir(directory, { withFileTypes: true })) {
       const path = join(directory, entry.name);
+      const name = relative(root, path).split(sep).join("/");
       if (entry.isDirectory()) await visit(path);
-      else if (entry.isFile()) files.push(relative(root, path).split(sep).join("/"));
+      else if (entry.isFile()) files.push(name);
+      else irregular.push(name);
     }
   }
   await visit(root);
-  return files.sort();
+  return { files: files.sort(), irregular: irregular.sort() };
 }
 
 /** The bundle's own manifest, or null for a sibling checkout copy, which ships none. */
@@ -66,7 +75,9 @@ export async function verifyTheme(bundle: string, release?: string): Promise<str
   }
 
   const declared = new Map(manifest.files.map((file) => [file.path, file]));
-  const actual = (await filesUnder(root)).filter((path) => path !== "manifest.json");
+  const { files, irregular } = await entriesUnder(root);
+  const actual = files.filter((path) => path !== "manifest.json");
+  for (const path of irregular) errors.push(`${path}: not a regular file`);
   for (const path of actual) if (!declared.has(path)) errors.push(`${path}: not declared in manifest`);
   for (const [path, expected] of declared) {
     if (!actual.includes(path)) {

@@ -1,6 +1,6 @@
 import { expect, test } from "bun:test";
 import { createHash } from "node:crypto";
-import { mkdir, mkdtemp, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, rm, symlink, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { readManifest, verifyTheme } from "./verify-theme.ts";
@@ -63,6 +63,24 @@ test("self-check rejects missing and undeclared files", async () => {
     "extra.css: not declared in manifest",
     "assets/logo.svg: missing",
   ]);
+});
+
+test("self-check rejects a symlink standing in for a bundle file", async () => {
+  const bundle = await releaseBundle();
+  const outside = join(await temporaryDirectory(), "outside.css");
+  await writeFile(outside, "a file from the build machine\n");
+  await rm(join(bundle, "tokens.css"));
+  await symlink(outside, join(bundle, "tokens.css"));
+
+  const errors = await verifyTheme(bundle);
+  expect(errors).toContain("tokens.css: not a regular file");
+  expect(errors).toContain("tokens.css: missing");
+});
+
+test("self-check rejects a symlinked directory smuggled into a bundle", async () => {
+  const bundle = await releaseBundle();
+  await symlink(await temporaryDirectory(), join(bundle, "assets/elsewhere"));
+  expect(await verifyTheme(bundle)).toEqual(["assets/elsewhere: not a regular file"]);
 });
 
 test("self-check ties the bundle to the requested release tag", async () => {

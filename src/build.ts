@@ -29,13 +29,16 @@ export async function build(): Promise<void> {
   await rm(TMP, { recursive: true, force: true });
   await mkdir(TMP, { recursive: true });
   await mkdir(join(TMP, "theme"), { recursive: true });
+  // dereference: false so a symlink in the theme drop is never resolved into the
+  // published site. The verifier rejects one in a release bundle; an unverified
+  // sibling copy gets this second line of defence.
   await Promise.all(
     ["tokens.css", "components.css", "shell.css", "shell.js"].map((file) =>
-      cp(join(THEME, file), join(TMP, "theme", file)),
+      cp(join(THEME, file), join(TMP, "theme", file), { dereference: false }),
     ),
   );
-  await cp(join(THEME, "assets"), join(TMP, "theme", "assets"), { recursive: true });
-  await cp(join(THEME, "assets"), TMP, { recursive: true });
+  await cp(join(THEME, "assets"), join(TMP, "theme", "assets"), { recursive: true, dereference: false });
+  await cp(join(THEME, "assets"), TMP, { recursive: true, dereference: false });
   await cp("static", TMP, { recursive: true });
   await cp("src/style.css", join(TMP, "style.css"));
   await Bun.write(join(TMP, "syntax.css"), await syntaxCss(join(THEME, "syntax-map.json")));
