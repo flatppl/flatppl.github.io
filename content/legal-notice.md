@@ -1,6 +1,6 @@
 ---
 title: Legal Notice
-description: Provider, copyright, data protection, and hosting information for the FlatPPL website.
+description: Provider, copyright, and data protection information for the FlatPPL website.
 ---
 
 The following provides mandatory data concerning the provider of this
