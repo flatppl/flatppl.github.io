@@ -61,10 +61,13 @@ maturity:
   conversion and compilation to MLIR is under development (partially
   functional but not end-user-ready).
 
-- Host-language APIs in Python and Julia are currently being drafted and
-  will be made available in the near future. They will make FlatPPL
-  models usable for simulation and inference with several common Python and
-  Julia statistics packages.
+- A [Python package](https://github.com/flatppl/flatppl-python) (alpha quality)
+  compiles FlatPPL queries through the Rust StableHLO emitter into JAX callables.
+  It supports differentiation and batching, and works with inference libraries
+  such as BlackJAX. See the [Python documentation](https://flatppl.org/flatppl-python/)
+  for installation and examples.
+
+- A Julia host-language API is being drafted.
 
 ## Repositories
 
@@ -74,6 +77,7 @@ FlatPPL is open source and development happens in the
 - [flatppl-design](https://github.com/flatppl/flatppl-design): the language specification.
 - [flatppl-js](https://github.com/flatppl/flatppl-js): the JavaScript engine and playground, and the Visual Studio Code extension.
 - [flatppl-rust](https://github.com/flatppl/flatppl-rust): the Rust FlatPPL tooling.
+- [flatppl-python](https://github.com/flatppl/flatppl-python): the Python interface for compiling and running FlatPPL queries with JAX.
 - [flatppl-grammars](https://github.com/flatppl/flatppl-grammars): FlatPPL grammars for code editors.
 - [flatppl-examples](https://github.com/flatppl/flatppl-examples): example FlatPPL models.
 - [flatppl-ai-skills](https://github.com/flatppl/flatppl-ai-skills): skills that teach AI coding agents to understand and generate FlatPPL.
