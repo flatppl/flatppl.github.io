@@ -5,7 +5,7 @@ import { readManifest, verifyTheme } from "./verify-theme.ts";
 const REPOSITORY = "https://github.com/flatppl/flatppl-theme";
 
 /** The theme release this site is built against; FLATPPL_THEME_REF overrides it to try a candidate. */
-export const THEME_REF = "v0.1.8";
+export const THEME_REF = "v0.1.9";
 
 const ROOT = resolve(import.meta.dir, "..");
 const DROP = join(ROOT, "vendor", "flatppl-theme");
